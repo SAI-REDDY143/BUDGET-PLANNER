@@ -1,0 +1,2258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BudgetFlow Pro · Travel Budget Planner</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   BASE
+   ============================================================ */
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', system-ui, sans-serif; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: #0a0e27;
+  color: #e0e7ff;
+  min-height: 100vh;
+  overflow-x: hidden;
+  transition: background 0.4s ease, color 0.4s ease;
+}
+
+/* ============================================================
+   THEMES
+   ============================================================ */
+body[data-theme="midnight"] {
+  --bg: linear-gradient(145deg, #0a0e27 0%, #0f172a 50%, #1e1b4b 100%);
+  --card: #111a35; --card-2: #0f172a;
+  --card-border: rgba(51, 65, 85, 0.6);
+  --text: #e0e7ff; --text-2: #93c5fd; --text-3: #60a5fa; --text-muted: #94a3b8;
+  --accent: #3b82f6; --accent-2: #6366f1; --accent-3: #0ea5e9;
+  --accent-light: #1e3a8a; --accent-lighter: #172554;
+  --input-bg: #1e293b;
+  --row-bg: #172554; --row-hover: #1e3a8a;
+  --progress: #1e3a8a;
+  --shadow: rgba(0,0,0,0.4);
+  --glass: rgba(15, 23, 42, 0.7);
+  --glass-border: rgba(51, 65, 85, 0.7);
+  --success: #10b981; --warning: #f59e0b; --danger: #ef4444;
+}
+
+body[data-theme="charcoal"] {
+  --bg: linear-gradient(145deg, #0f0f12 0%, #18181b 50%, #27272a 100%);
+  --card: #1c1c22; --card-2: #18181b;
+  --card-border: rgba(63, 63, 70, 0.7);
+  --text: #f4f4f5; --text-2: #c4b5fd; --text-3: #a78bfa; --text-muted: #a1a1aa;
+  --accent: #8b5cf6; --accent-2: #a78bfa; --accent-3: #6366f1;
+  --accent-light: #3f3f46; --accent-lighter: #27272a;
+  --input-bg: #27272a;
+  --row-bg: #23232a; --row-hover: #2a2a32;
+  --progress: #3f3f46;
+  --shadow: rgba(0,0,0,0.5);
+  --glass: rgba(30, 30, 36, 0.7);
+  --glass-border: rgba(63, 63, 70, 0.7);
+  --success: #10b981; --warning: #f59e0b; --danger: #ef4444;
+}
+
+body[data-theme="light"] {
+  --bg: linear-gradient(145deg, #f8fafc 0%, #ffffff 50%, #e2e8f0 100%);
+  --card: #ffffff; --card-2: #f8fafc;
+  --card-border: rgba(226, 232, 240, 0.9);
+  --text: #0f172a; --text-2: #334155; --text-3: #64748b; --text-muted: #94a3b8;
+  --accent: #4f46e5; --accent-2: #7c3aed; --accent-3: #2563eb;
+  --accent-light: #e2e8f0; --accent-lighter: #f1f5f9;
+  --input-bg: #ffffff;
+  --row-bg: #f8fafc; --row-hover: #f1f5f9;
+  --progress: #e2e8f0;
+  --shadow: rgba(15, 23, 42, 0.08);
+  --glass: rgba(255, 255, 255, 0.8);
+  --glass-border: rgba(226, 232, 240, 0.9);
+  --success: #10b981; --warning: #f59e0b; --danger: #ef4444;
+}
+
+body[data-theme="cream"] {
+  --bg: linear-gradient(145deg, #fef9f3 0%, #fffaf0 50%, #ffedd5 100%);
+  --card: #fffbf5; --card-2: #fff8ee;
+  --card-border: rgba(253, 230, 200, 0.9);
+  --text: #422006; --text-2: #78350f; --text-3: #b45309; --text-muted: #a16207;
+  --accent: #d97706; --accent-2: #ea580c; --accent-3: #b45309;
+  --accent-light: #fef3c7; --accent-lighter: #fef9e7;
+  --input-bg: #ffffff;
+  --row-bg: #fffaf0; --row-hover: #fff4e6;
+  --progress: #fde68a;
+  --shadow: rgba(217, 119, 6, 0.12);
+  --glass: rgba(255, 250, 240, 0.85);
+  --glass-border: rgba(253, 230, 200, 0.9);
+  --success: #10b981; --warning: #f59e0b; --danger: #ef4444;
+}
+
+body { background: var(--bg); color: var(--text); }
+
+/* ============================================================
+   ANIMATIONS
+   ============================================================ */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-40px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(40px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes zoomIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to   { opacity: 1; transform: scale(1); }
+}
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4); }
+  50%      { box-shadow: 0 0 0 14px rgba(59, 130, 246, 0); }
+}
+@keyframes float {
+  0%, 100% { transform: translate(0, 0); }
+  50%      { transform: translate(20px, -30px); }
+}
+@keyframes kenBurns {
+  from { transform: scale(1) translate(0, 0); }
+  to   { transform: scale(1.12) translate(-2%, -1%); }
+}
+@keyframes rippleAnim {
+  to { transform: scale(4); opacity: 0; }
+}
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.anim-fadeUp   { animation: fadeUp 0.55s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.anim-fadeIn   { animation: fadeIn 0.4s ease both; }
+.anim-zoomIn   { animation: zoomIn 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+.anim-left     { animation: slideInLeft 0.7s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.anim-right    { animation: slideInRight 0.7s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+/* Blobs */
+body::before, body::after {
+  content: '';
+  position: fixed;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+  filter: blur(60px);
+}
+body::before {
+  top: -150px; right: -100px;
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.25), transparent 70%);
+  animation: float 18s ease-in-out infinite;
+}
+body::after {
+  bottom: -150px; left: -100px;
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(14, 165, 233, 0.2), transparent 70%);
+  animation: float 24s ease-in-out infinite reverse;
+}
+
+/* ============================================================
+   RIPPLE
+   ============================================================ */
+.ripple { position: absolute; border-radius: 50%; background: rgba(255,255,255,0.5);
+  transform: scale(0); animation: rippleAnim 0.65s ease-out; pointer-events: none; z-index: 10; }
+.ripple-btn { position: relative; overflow: hidden; }
+.ripple-btn-dark .ripple { background: rgba(59, 130, 246, 0.4); }
+
+/* ============================================================
+   LANDING
+   ============================================================ */
+.landing {
+  position: fixed; inset: 0; z-index: 50;
+  display: grid; grid-template-columns: 1.15fr 1fr;
+  overflow: hidden;
+  transition: opacity 0.5s, transform 0.5s;
+}
+.landing.hide { opacity: 0; transform: scale(1.04); pointer-events: none; }
+
+@media (max-width: 950px) {
+  .landing { grid-template-columns: 1fr; overflow-y: auto; }
+}
+
+.hero {
+  position: relative; display: flex; align-items: center;
+  padding: 3rem; color: white; overflow: hidden;
+}
+.hero-bg {
+  position: absolute; inset: 0;
+  background-image: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1600&q=80');
+  background-size: cover; background-position: center;
+  animation: kenBurns 20s ease-in-out infinite alternate;
+}
+.hero-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(10,14,39,0.92) 0%, rgba(30,27,75,0.85) 50%, rgba(79,70,229,0.6) 100%);
+}
+.hero-content { position: relative; z-index: 2; max-width: 560px; }
+
+.hero-logo { display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem; }
+.hero-logo-icon {
+  width: 56px; height: 56px; border-radius: 18px;
+  background: linear-gradient(135deg, #4f46e5, #7c3aed, #2563eb);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.8rem; color: white;
+  box-shadow: 0 16px 32px -8px rgba(124, 58, 237, 0.6);
+  animation: pulseGlow 3s ease-in-out infinite;
+}
+.hero-logo-text h1 { font-size: 1.5rem; font-weight: 800; letter-spacing: -0.02em; color: white; }
+.hero-logo-text p { font-size: 0.78rem; opacity: 0.75; font-weight: 500; margin-top: 0.1rem; }
+
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.22);
+  backdrop-filter: blur(10px); padding: 0.45rem 1rem; border-radius: 40px;
+  font-size: 0.78rem; font-weight: 600; margin-bottom: 1.5rem;
+  color: white;
+}
+.hero-badge i { color: #fbbf24; }
+
+.hero-title {
+  font-size: clamp(2.2rem, 4.5vw, 3.5rem);
+  font-weight: 900; line-height: 1.05; letter-spacing: -0.03em;
+  margin-bottom: 1.2rem; color: white;
+}
+.hero-title .gradient {
+  background: linear-gradient(135deg, #fbbf24 0%, #f97316 50%, #ec4899 100%);
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; color: transparent;
+}
+.hero-subtitle {
+  font-size: 1.02rem; line-height: 1.65; opacity: 0.9;
+  font-weight: 500; margin-bottom: 1.8rem; max-width: 500px; color: white;
+}
+
+.hero-chips { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-bottom: 2rem; }
+.hero-chip {
+  background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2);
+  backdrop-filter: blur(10px); padding: 0.5rem 1rem; border-radius: 40px;
+  font-size: 0.76rem; font-weight: 600; display: flex; align-items: center;
+  gap: 0.4rem; color: white; transition: transform 0.2s, background 0.2s;
+}
+.hero-chip:hover { transform: translateY(-2px); background: rgba(255,255,255,0.2); }
+.hero-chip i { color: #fbbf24; }
+
+.hero-stats {
+  display: flex; gap: 2rem; flex-wrap: wrap;
+  padding-top: 1.6rem; border-top: 1px solid rgba(255,255,255,0.15);
+}
+.hero-stat .n {
+  font-size: 1.8rem; font-weight: 800;
+  background: linear-gradient(135deg, #ffffff, #c7d2fe);
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.hero-stat .l {
+  font-size: 0.7rem; opacity: 0.75; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.06em; margin-top: 0.15rem;
+}
+
+/* Login panel */
+.login-panel {
+  background: var(--card); display: flex; align-items: center;
+  justify-content: center; padding: 2rem; overflow-y: auto;
+}
+.login-card {
+  width: 100%; max-width: 440px;
+  background: var(--card-2); border-radius: 28px;
+  padding: 2rem; border: 1px solid var(--card-border);
+  box-shadow: 0 24px 64px -20px rgba(0,0,0,0.5);
+}
+.login-head h2 { font-size: 1.5rem; font-weight: 800; color: var(--text); margin-bottom: 0.35rem; }
+.login-head p { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem; }
+
+.login-tabs {
+  display: flex; background: var(--accent-lighter); border-radius: 60px;
+  padding: 0.35rem; margin-bottom: 1.5rem; border: 1px solid var(--card-border);
+}
+.login-tab {
+  flex: 1; padding: 0.7rem 0.8rem; border-radius: 50px; border: none;
+  background: transparent; font-weight: 700; font-size: 0.82rem;
+  color: var(--text-2); cursor: pointer; transition: all 0.25s;
+  display: flex; align-items: center; justify-content: center; gap: 0.4rem;
+}
+.login-tab.active {
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  color: white; box-shadow: 0 6px 16px -4px var(--shadow);
+}
+
+.login-form { display: none; flex-direction: column; gap: 0.9rem; }
+.login-form.active { display: flex; }
+
+.field { display: flex; flex-direction: column; gap: 0.3rem; }
+.field label {
+  font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.05em; color: var(--text-2);
+}
+.field .wrap { position: relative; }
+.field .wrap i {
+  position: absolute; left: 1rem; top: 50%; transform: translateY(-50%);
+  color: var(--text-muted); font-size: 0.85rem; pointer-events: none;
+}
+.field input, .field select {
+  width: 100%; padding: 0.9rem 1.1rem 0.9rem 2.5rem;
+  border-radius: 14px; border: 1.5px solid var(--card-border);
+  background: var(--input-bg); font-size: 0.9rem; font-weight: 500;
+  color: var(--text); outline: none; transition: all 0.2s;
+}
+.field input:focus, .field select:focus {
+  border-color: var(--accent); box-shadow: 0 0 0 4px rgba(59,130,246,0.15);
+}
+.field select { padding-left: 1rem; }
+
+.hint {
+  font-size: 0.72rem; color: var(--text-muted); font-weight: 500;
+  background: var(--accent-lighter); padding: 0.6rem 0.9rem;
+  border-radius: 12px; display: flex; align-items: center; gap: 0.5rem;
+  border: 1px dashed var(--card-border);
+}
+.hint i { color: var(--accent); }
+.hint strong { color: var(--accent-2); }
+
+/* Buttons */
+.btn {
+  padding: 0.9rem 1.5rem; border-radius: 14px; border: none;
+  font-weight: 700; font-size: 0.88rem; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  gap: 0.5rem; width: 100%; transition: all 0.25s;
+  position: relative; overflow: hidden;
+}
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  color: white; box-shadow: 0 10px 22px -8px rgba(59,130,246,0.6);
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 14px 28px -8px rgba(59,130,246,0.8); }
+.btn-primary:active { transform: translateY(0) scale(0.98); }
+
+.btn-secondary {
+  background: var(--accent-lighter); color: var(--text-2);
+  border: 1.5px solid var(--card-border);
+}
+.btn-secondary:hover { background: var(--accent-light); border-color: var(--accent); }
+.btn-secondary:active { transform: scale(0.98); }
+
+/* ============================================================
+   MAIN APP
+   ============================================================ */
+.app { display: none; max-width: 1500px; margin: 0 auto;
+  padding: 1.5rem; position: relative; z-index: 1; }
+.app.show { display: block; animation: fadeUp 0.5s ease both; }
+
+/* Top bar */
+.topbar {
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;
+  background: var(--glass); backdrop-filter: blur(16px);
+  padding: 1rem 1.4rem; border-radius: 24px;
+  border: 1px solid var(--glass-border); box-shadow: 0 8px 32px var(--shadow);
+}
+.brand { display: flex; align-items: center; gap: 0.8rem; }
+.brand-icon {
+  width: 44px; height: 44px; border-radius: 14px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  color: white; display: flex; align-items: center; justify-content: center;
+  font-size: 1.3rem; box-shadow: 0 10px 20px -6px rgba(59,130,246,0.5);
+}
+.brand h1 { font-size: 1.35rem; font-weight: 800; letter-spacing: -0.02em; color: var(--text); }
+.brand .tag { font-size: 0.7rem; color: var(--text-muted); font-weight: 500;
+  display: flex; align-items: center; gap: 0.3rem; margin-top: 0.05rem; }
+
+.top-actions { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+
+.role-toggle {
+  display: flex; background: var(--accent-lighter); border-radius: 60px;
+  padding: 0.25rem; border: 1px solid var(--card-border);
+}
+.role-btn {
+  padding: 0.5rem 1rem; border-radius: 50px; border: none;
+  background: transparent; font-weight: 700; font-size: 0.76rem;
+  color: var(--text-2); cursor: pointer; transition: all 0.25s;
+  display: flex; align-items: center; gap: 0.4rem;
+}
+.role-btn.active {
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  color: white; box-shadow: 0 6px 14px -4px var(--shadow);
+}
+
+.theme-picker {
+  display: flex; align-items: center; gap: 0.4rem;
+  background: var(--glass); border-radius: 60px;
+  padding: 0.3rem 0.7rem 0.3rem 0.9rem;
+  border: 1px solid var(--glass-border);
+}
+.theme-picker label {
+  font-size: 0.66rem; font-weight: 700; color: var(--text-2);
+  text-transform: uppercase; letter-spacing: 0.04em;
+  display: flex; align-items: center; gap: 0.3rem;
+}
+.theme-picker select {
+  background: transparent; border: none; font-weight: 700;
+  font-size: 0.78rem; color: var(--text); cursor: pointer;
+  outline: none; padding: 0.3rem 0.2rem;
+}
+.theme-picker select option { background: var(--card); color: var(--text); }
+
+.chip {
+  background: var(--accent-lighter); border-radius: 60px;
+  padding: 0.4rem 1rem 0.4rem 0.85rem;
+  display: flex; align-items: center; gap: 0.5rem;
+  border: 1px solid var(--card-border);
+}
+.chip i { color: var(--accent); font-size: 0.9rem; }
+.chip .n { font-weight: 700; font-size: 0.82rem; color: var(--text); }
+.chip .s { font-size: 0.68rem; color: var(--text-2); font-weight: 500; }
+
+.logout {
+  background: linear-gradient(135deg, #ef4444, #f87171);
+  border: none; color: white; width: 40px; height: 40px;
+  border-radius: 50%; cursor: pointer; font-size: 0.85rem;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.25s;
+}
+.logout:hover { transform: scale(1.08); box-shadow: 0 8px 20px -6px rgba(239,68,68,0.5); }
+
+/* Views */
+.view { display: none; }
+.view.active { display: block; animation: fadeUp 0.5s ease both; }
+
+/* Cards */
+.card {
+  background: var(--card); border-radius: 24px;
+  padding: 1.4rem 1.5rem 1.6rem; border: 1px solid var(--card-border);
+  box-shadow: 0 12px 32px -8px var(--shadow);
+  margin-bottom: 1.3rem;
+  transition: box-shadow 0.3s, transform 0.3s;
+}
+.card:hover { box-shadow: 0 20px 48px -12px var(--shadow); transform: translateY(-2px); }
+
+.card-head {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 1.2rem; flex-wrap: wrap; gap: 0.7rem;
+}
+.card-head h2 {
+  font-size: 1.1rem; font-weight: 700; display: flex;
+  align-items: center; gap: 0.5rem; color: var(--text);
+}
+.card-head h2 i {
+  color: white; background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  padding: 0.4rem; border-radius: 10px; font-size: 0.82rem;
+  box-shadow: 0 6px 12px -4px rgba(59,130,246,0.5);
+}
+
+.pill {
+  background: var(--accent-lighter); color: var(--text-2);
+  border-radius: 40px; padding: 0.28rem 0.85rem;
+  font-size: 0.66rem; font-weight: 700;
+  display: inline-flex; align-items: center; gap: 0.3rem;
+  border: 1px solid var(--card-border);
+}
+
+/* Country grid */
+.country-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+  gap: 0.85rem;
+}
+.country-card {
+  background: var(--row-bg); border-radius: 18px; overflow: hidden;
+  border: 2px solid transparent; cursor: pointer;
+  transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative; animation: fadeUp 0.5s ease both;
+}
+.country-card:hover {
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: 0 20px 40px -12px rgba(0,0,0,0.4);
+  border-color: var(--accent);
+}
+.country-card.selected {
+  border-color: var(--accent);
+  box-shadow: 0 16px 40px -10px rgba(59,130,246,0.5);
+  animation: pulseGlow 2.5s ease-in-out infinite;
+}
+.thumb {
+  height: 95px; background-size: cover; background-position: center;
+  position: relative; transition: transform 0.6s;
+}
+.country-card:hover .thumb { transform: scale(1.08); }
+.thumb::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(180deg, transparent 30%, rgba(0,0,0,0.7) 100%);
+}
+.thumb .flag {
+  position: absolute; bottom: 6px; left: 8px; font-size: 1.4rem;
+  z-index: 1; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.7));
+}
+.thumb .rating {
+  position: absolute; top: 6px; right: 6px;
+  background: rgba(0,0,0,0.7); backdrop-filter: blur(8px);
+  color: #fbbf24; padding: 0.18rem 0.5rem; border-radius: 40px;
+  font-size: 0.66rem; font-weight: 800; z-index: 1;
+  display: flex; align-items: center; gap: 0.2rem;
+}
+.thumb .rating i { font-size: 0.55rem; }
+
+.ci { padding: 0.55rem 0.75rem 0.65rem; }
+.ci .n { font-size: 0.8rem; font-weight: 700; color: var(--text);
+  display: flex; align-items: center; gap: 0.3rem; }
+.ci .d { font-size: 0.64rem; color: var(--text-muted);
+  font-weight: 600; margin-top: 0.12rem; }
+.ci .check { color: var(--success); font-size: 0.7rem; margin-left: auto; }
+
+/* Gallery */
+.gallery-header {
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 0.6rem; margin: 1rem 0 0.7rem;
+}
+.gallery-title {
+  font-size: 0.98rem; font-weight: 700; color: var(--text);
+  display: flex; align-items: center; gap: 0.5rem;
+}
+.gallery-title i { color: var(--accent); }
+.gallery-rating {
+  display: flex; align-items: center; gap: 0.4rem;
+  background: var(--accent-lighter); padding: 0.3rem 0.8rem;
+  border-radius: 40px; font-size: 0.78rem; font-weight: 700;
+  color: var(--text); border: 1px solid var(--card-border);
+}
+.gallery-rating .stars { color: #fbbf24; letter-spacing: 1px; }
+.gallery-rating .cnt { color: var(--text-muted); font-weight: 600; font-size: 0.7rem; }
+
+.gallery {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.65rem;
+}
+@media (max-width: 500px) { .gallery { grid-template-columns: 1fr; } }
+.gal-item {
+  aspect-ratio: 4/3; border-radius: 16px; background-size: cover;
+  background-position: center; border: 1px solid var(--card-border);
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  cursor: pointer; position: relative; overflow: hidden;
+  animation: fadeUp 0.5s ease both;
+}
+.gal-item:nth-child(1) { animation-delay: 0.05s; }
+.gal-item:nth-child(2) { animation-delay: 0.1s; }
+.gal-item:nth-child(3) { animation-delay: 0.15s; }
+.gal-item:hover {
+  transform: scale(1.05) rotate(-1deg);
+  box-shadow: 0 20px 40px -12px rgba(0,0,0,0.4);
+  z-index: 2;
+}
+
+/* Stats */
+.stats {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(185px, 1fr));
+  gap: 0.9rem; margin-bottom: 1.3rem;
+}
+.stat {
+  background: var(--card); border-radius: 20px;
+  padding: 1rem 1.2rem; border: 1px solid var(--card-border);
+  box-shadow: 0 6px 20px -6px var(--shadow);
+  transition: transform 0.3s, box-shadow 0.3s;
+  animation: fadeUp 0.5s ease both;
+}
+.stat:nth-child(1) { animation-delay: 0.05s; }
+.stat:nth-child(2) { animation-delay: 0.1s; }
+.stat:nth-child(3) { animation-delay: 0.15s; }
+.stat:nth-child(4) { animation-delay: 0.2s; }
+.stat:hover { transform: translateY(-4px); box-shadow: 0 16px 36px -8px var(--shadow); }
+.stat .l {
+  font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.05em;
+  font-weight: 700; color: var(--text-muted); margin-bottom: 0.3rem;
+  display: flex; align-items: center; gap: 0.35rem;
+}
+.stat .l i { color: var(--accent); }
+.stat .v { font-size: 1.35rem; font-weight: 800; color: var(--text); line-height: 1.2; }
+.stat .s { font-size: 0.74rem; font-weight: 600; color: var(--text-2); margin-top: 0.2rem; }
+.stat.danger { background: linear-gradient(135deg, rgba(239,68,68,0.15), rgba(239,68,68,0.08)); }
+.stat.danger .v { color: var(--danger); }
+
+/* Category rows */
+.cat-list { display: flex; flex-direction: column; gap: 0.85rem; }
+.cat-row {
+  background: var(--row-bg); padding: 0.85rem 1rem; border-radius: 18px;
+  border: 1px solid var(--card-border); transition: all 0.3s;
+  animation: fadeUp 0.4s ease both;
+}
+.cat-row:nth-child(1) { animation-delay: 0.05s; }
+.cat-row:nth-child(2) { animation-delay: 0.1s; }
+.cat-row:nth-child(3) { animation-delay: 0.15s; }
+.cat-row:nth-child(4) { animation-delay: 0.2s; }
+.cat-row:nth-child(5) { animation-delay: 0.25s; }
+.cat-row:nth-child(6) { animation-delay: 0.3s; }
+.cat-row:hover { background: var(--row-hover); transform: translateX(3px); }
+
+.cat-top {
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.4rem;
+}
+.cat-name { display: flex; align-items: center; gap: 0.45rem;
+  font-weight: 700; font-size: 0.88rem; color: var(--text); }
+.cat-name i { width: 20px; font-size: 0.9rem; }
+.cat-limit {
+  color: var(--text-2); font-weight: 700; font-size: 0.72rem;
+  background: var(--accent-light); padding: 0.2rem 0.7rem;
+  border-radius: 40px;
+}
+.rollover {
+  font-size: 0.62rem; background: linear-gradient(135deg, #3b82f6, #6366f1);
+  color: white; padding: 0.15rem 0.6rem; border-radius: 40px;
+  font-weight: 700; margin-left: 0.3rem;
+  display: inline-flex; align-items: center; gap: 0.2rem;
+}
+.bar-wrap { display: flex; align-items: center; gap: 0.85rem; }
+.bar-bg {
+  flex: 1; height: 11px; background: var(--progress);
+  border-radius: 40px; overflow: hidden;
+}
+.bar-fill {
+  height: 100%; border-radius: 40px;
+  transition: width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+  background: linear-gradient(90deg, #3b82f6, #6366f1);
+}
+.bar-fill.warn { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+.bar-fill.danger {
+  background: linear-gradient(90deg, #ef4444, #f87171);
+  animation: pulseGlow 2s infinite;
+}
+.cat-amt { text-align: right; min-width: 130px; }
+.cat-amt .inr { font-size: 0.82rem; font-weight: 700; color: var(--text); }
+.cat-amt .loc { font-size: 0.68rem; font-weight: 600; color: var(--text-muted); margin-top: 0.1rem; }
+
+/* Note */
+.note {
+  background: var(--accent-lighter); border-radius: 40px;
+  padding: 0.6rem 1.1rem; font-size: 0.72rem; font-weight: 500;
+  color: var(--text-2); display: flex; align-items: center;
+  gap: 0.5rem; margin-top: 0.9rem;
+  border: 1px dashed var(--card-border);
+}
+.note i { color: var(--accent); }
+
+/* Form */
+.form { display: flex; flex-direction: column; gap: 0.85rem; }
+.row-2 { display: flex; gap: 0.8rem; flex-wrap: wrap; }
+.row-2 > .field { flex: 1; min-width: 120px; }
+
+/* Yearly */
+.yearly {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(82px, 1fr));
+  gap: 0.6rem;
+}
+.ym {
+  background: var(--accent-lighter); border-radius: 16px;
+  padding: 0.7rem 0.35rem; text-align: center;
+  border: 1px solid var(--card-border);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation: fadeUp 0.4s ease both;
+}
+.ym:hover { transform: translateY(-4px) scale(1.04); box-shadow: 0 12px 24px -8px var(--shadow); }
+.ym .m { font-size: 0.68rem; font-weight: 700; color: var(--text-2); margin-bottom: 0.25rem; }
+.ym .t { font-weight: 800; font-size: 0.85rem; color: var(--text); }
+.ym .l { font-size: 0.6rem; color: var(--text-muted); margin-top: 0.1rem; font-weight: 600; }
+
+/* Dual column */
+.grid-2 { display: grid; grid-template-columns: 1.6fr 1fr; gap: 1.3rem; align-items: start; }
+@media (max-width: 1050px) { .grid-2 { grid-template-columns: 1fr; } }
+
+/* Admin tabs */
+.admin-tabs {
+  display: flex; gap: 0.4rem; margin-bottom: 1.2rem;
+  background: var(--accent-lighter); border-radius: 60px;
+  padding: 0.3rem; border: 1px solid var(--card-border);
+  width: fit-content; flex-wrap: wrap;
+}
+.admin-tab {
+  padding: 0.55rem 1.1rem; border-radius: 50px; border: none;
+  background: transparent; font-weight: 700; font-size: 0.76rem;
+  color: var(--text-2); cursor: pointer; transition: all 0.25s;
+  display: flex; align-items: center; gap: 0.4rem;
+}
+.admin-tab.active {
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  color: white; box-shadow: 0 6px 14px -4px var(--shadow);
+}
+.tab-content { display: none; }
+.tab-content.active { display: block; animation: fadeUp 0.4s ease both; }
+
+/* Tables */
+.tbl-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+th {
+  text-align: left; padding: 0.65rem 0.8rem; font-weight: 700;
+  color: var(--text-2); font-size: 0.66rem; text-transform: uppercase;
+  letter-spacing: 0.05em; border-bottom: 2px solid var(--card-border);
+}
+td {
+  padding: 0.75rem 0.8rem; border-bottom: 1px solid var(--card-border);
+  color: var(--text); font-weight: 500;
+}
+tr:hover td { background: var(--row-hover); }
+
+.avatar {
+  width: 30px; height: 30px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  color: white; display: inline-flex; align-items: center;
+  justify-content: center; font-weight: 700; font-size: 0.72rem;
+  margin-right: 0.5rem;
+}
+
+.status {
+  padding: 0.2rem 0.65rem; border-radius: 40px;
+  font-size: 0.64rem; font-weight: 700;
+}
+.status.ok { background: rgba(16,185,129,0.2); color: #34d399; }
+.status.warn { background: rgba(245,158,11,0.2); color: #fbbf24; }
+.status.over { background: rgba(239,68,68,0.2); color: #f87171; }
+
+/* Admin country grid */
+.admin-country-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1rem;
+}
+.admin-country {
+  background: var(--row-bg); border-radius: 20px; overflow: hidden;
+  border: 1px solid var(--card-border);
+  transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation: fadeUp 0.4s ease both;
+}
+.admin-country:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 40px -12px var(--shadow);
+  border-color: var(--accent);
+}
+.admin-country .thumb {
+  height: 95px; background-size: cover; background-position: center;
+  position: relative;
+}
+.admin-country .thumb::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(180deg, transparent 40%, rgba(0,0,0,0.7) 100%);
+}
+.admin-country .thumb .flag {
+  position: absolute; bottom: 6px; left: 9px; font-size: 1.5rem;
+  z-index: 1; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.7));
+}
+.admin-country .thumb .rating {
+  position: absolute; top: 6px; right: 6px;
+  background: rgba(0,0,0,0.7); color: #fbbf24;
+  padding: 0.18rem 0.5rem; border-radius: 40px;
+  font-size: 0.64rem; font-weight: 800; z-index: 1;
+  display: flex; align-items: center; gap: 0.2rem;
+}
+.admin-country-body { padding: 0.85rem 0.95rem 1rem; }
+.admin-country-body .n {
+  font-weight: 800; font-size: 0.92rem; color: var(--text);
+  margin-bottom: 0.5rem;
+}
+.detail {
+  font-size: 0.7rem; color: var(--text-2); font-weight: 600;
+  display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.2rem;
+}
+.detail i { width: 14px; color: var(--accent); }
+.actions { display: flex; gap: 0.4rem; margin-top: 0.7rem; padding-top: 0.7rem;
+  border-top: 1px solid var(--card-border); }
+.actions .btn-edit, .actions .btn-del {
+  padding: 0.5rem; border-radius: 10px; border: 1px solid var(--card-border);
+  cursor: pointer; font-weight: 700; font-size: 0.7rem;
+  display: flex; align-items: center; justify-content: center;
+  gap: 0.3rem; transition: all 0.2s;
+}
+.actions .btn-edit {
+  flex: 1; background: var(--accent-lighter); color: var(--text-2);
+}
+.actions .btn-edit:hover { background: rgba(59,130,246,0.2); color: var(--accent); }
+.actions .btn-del {
+  background: rgba(239,68,68,0.15); color: var(--danger);
+  border-color: rgba(239,68,68,0.3);
+}
+.actions .btn-del:hover { background: rgba(239,68,68,0.25); transform: scale(1.05); }
+
+/* Modal */
+.modal-bg {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(8px); z-index: 999;
+  display: none; align-items: center; justify-content: center;
+  padding: 1.5rem;
+}
+.modal-bg.show { display: flex; animation: fadeIn 0.3s ease; }
+.modal {
+  background: var(--card); border-radius: 26px; padding: 1.6rem;
+  max-width: 540px; width: 100%; max-height: 90vh; overflow-y: auto;
+  border: 1px solid var(--card-border);
+  box-shadow: 0 32px 80px -20px rgba(0,0,0,0.6);
+  animation: zoomIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.modal-head {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 1.2rem;
+}
+.modal-head h2 { font-size: 1.15rem; font-weight: 800; color: var(--text);
+  display: flex; align-items: center; gap: 0.5rem; }
+.modal-head h2 i { color: var(--accent); }
+.modal-close {
+  background: var(--accent-lighter); border: none;
+  width: 34px; height: 34px; border-radius: 50%; color: var(--text-2);
+  cursor: pointer; font-size: 0.9rem; transition: all 0.2s;
+}
+.modal-close:hover { background: rgba(239,68,68,0.2); color: var(--danger); transform: rotate(90deg); }
+
+/* Toast */
+.toast {
+  position: fixed; bottom: 2rem; left: 50%;
+  transform: translateX(-50%) translateY(120px);
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  color: white; padding: 0.9rem 1.4rem; border-radius: 40px;
+  font-weight: 700; font-size: 0.85rem;
+  box-shadow: 0 20px 40px -10px rgba(59,130,246,0.6);
+  z-index: 10000; display: flex; align-items: center; gap: 0.5rem;
+  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  pointer-events: none; max-width: 90vw;
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+
+/* Footer */
+footer {
+  margin-top: 2rem; text-align: center; font-size: 0.72rem;
+  color: var(--text-muted); border-top: 1px solid var(--card-border);
+  padding-top: 1.4rem; font-weight: 500;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: var(--accent-lighter); }
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  border-radius: 10px;
+}
+</style>
+</head>
+<body data-theme="midnight">
+
+<!-- ============================================================
+     LANDING VIEW
+     ============================================================ -->
+<div class="landing" id="landing">
+  <div class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <div class="hero-logo anim-left">
+        <div class="hero-logo-icon"><i class="fas fa-chart-pie"></i></div>
+        <div class="hero-logo-text">
+          <h1>BudgetFlow Pro</h1>
+          <p><i class="fas fa-globe"></i> Multi-Country Budget Planner</p>
+        </div>
+      </div>
+
+      <div class="hero-badge anim-fadeUp" style="animation-delay:0.15s">
+        <i class="fas fa-star"></i> Rated 4.9 · Trusted by 12,000+ travelers
+      </div>
+
+      <h1 class="hero-title anim-fadeUp" style="animation-delay:0.25s">
+        Plan. Track.<br>
+        <span class="gradient">Travel Smarter.</span>
+      </h1>
+
+      <p class="hero-subtitle anim-fadeUp" style="animation-delay:0.35s">
+        Master your travel finances across 10 dream destinations. Track spending in
+        Indian Rupees and local currency, set category limits, and never overshoot your budget.
+      </p>
+
+      <div class="hero-chips anim-fadeUp" style="animation-delay:0.45s">
+        <div class="hero-chip"><i class="fas fa-coins"></i> Dual Currency</div>
+        <div class="hero-chip"><i class="fas fa-chart-line"></i> Live Tracking</div>
+        <div class="hero-chip"><i class="fas fa-rotate-left"></i> Rollover</div>
+        <div class="hero-chip"><i class="fas fa-shield-alt"></i> Secure</div>
+      </div>
+
+      <div class="hero-stats anim-fadeUp" style="animation-delay:0.55s">
+        <div class="hero-stat"><div class="n">10+</div><div class="l">Destinations</div></div>
+        <div class="hero-stat"><div class="n">₹0</div><div class="l">Hidden Fees</div></div>
+        <div class="hero-stat"><div class="n">24/7</div><div class="l">Tracking</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="login-panel">
+    <div class="login-card anim-right">
+      <div class="login-head">
+        <h2 id="loginTitle">Welcome Back</h2>
+        <p id="loginSub">Sign in to continue planning your journey</p>
+      </div>
+
+      <div class="login-tabs">
+        <button class="login-tab active" data-tab="user" onclick="switchLoginTab('user')">
+          <i class="fas fa-user"></i> Traveler
+        </button>
+        <button class="login-tab" data-tab="admin" onclick="switchLoginTab('admin')">
+          <i class="fas fa-shield-alt"></i> Admin
+        </button>
+      </div>
+
+      <div class="login-form active" id="userForm">
+        <div class="field">
+          <label>Full Name</label>
+          <div class="wrap">
+            <i class="fas fa-user"></i>
+            <input type="text" id="loginName" placeholder="e.g. Aarav Sharma" value="Aarav Sharma">
+          </div>
+        </div>
+        <div class="field">
+          <label>Mobile Number</label>
+          <div class="wrap">
+            <i class="fas fa-mobile-alt"></i>
+            <input type="tel" id="loginPhone" placeholder="10-digit number" value="9876543210" maxlength="10">
+          </div>
+        </div>
+        <button class="btn btn-primary ripple-btn" onclick="loginUser()">
+          <i class="fas fa-rocket"></i> Start Planning
+        </button>
+        <div class="hint">
+          <i class="fas fa-lightbulb"></i>
+          <span>New here? Enter your name & mobile — we'll set up your account instantly.</span>
+        </div>
+      </div>
+
+      <div class="login-form" id="adminForm">
+        <div class="field">
+          <label>Admin Username</label>
+          <div class="wrap">
+            <i class="fas fa-user-shield"></i>
+            <input type="text" id="adminUser" placeholder="Enter username">
+          </div>
+        </div>
+        <div class="field">
+          <label>Password</label>
+          <div class="wrap">
+            <i class="fas fa-lock"></i>
+            <input type="password" id="adminPass" placeholder="Enter password">
+          </div>
+        </div>
+        <button class="btn btn-primary ripple-btn" onclick="loginAdmin()">
+          <i class="fas fa-sign-in-alt"></i> Login as Admin
+        </button>
+        <div class="hint">
+          <i class="fas fa-key"></i>
+          <span>Demo credentials: <strong>jeevan</strong> / <strong>123</strong></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     MAIN APP
+     ============================================================ -->
+<div class="app" id="app">
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-icon"><i class="fas fa-chart-pie"></i></div>
+      <div>
+        <h1>BudgetFlow Pro</h1>
+        <div class="tag"><i class="fas fa-globe"></i> Multi-Country · INR + Local</div>
+      </div>
+    </div>
+
+    <div class="top-actions">
+      <div class="role-toggle">
+        <button class="role-btn active" id="btnUser" onclick="switchRole('user')">
+          <i class="fas fa-user"></i> Traveler
+        </button>
+        <button class="role-btn" id="btnAdmin" onclick="switchRole('admin')" style="display:none;">
+          <i class="fas fa-shield-alt"></i> Admin
+        </button>
+      </div>
+
+      <div class="theme-picker">
+        <label><i class="fas fa-palette"></i> Theme</label>
+        <select id="themeSel" onchange="changeTheme(this.value)">
+          <option value="midnight">🌌 Midnight</option>
+          <option value="charcoal">🖤 Charcoal</option>
+          <option value="light">🤍 Pure White</option>
+          <option value="cream">🌾 Warm Cream</option>
+        </select>
+      </div>
+
+      <div class="chip">
+        <i class="fas fa-user-circle"></i>
+        <div>
+          <div class="n" id="chipName">Aarav Sharma</div>
+          <div class="s" id="chipSub">9876543210</div>
+        </div>
+      </div>
+
+      <button class="logout ripple-btn" onclick="logout()">
+        <i class="fas fa-sign-out-alt"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       USER VIEW
+       ============================================================ -->
+  <div class="view active" id="userView">
+
+    <div class="card">
+      <div class="card-head">
+        <h2><i class="fas fa-globe-americas"></i> Choose Your Destination</h2>
+        <span class="pill"><i class="fas fa-map-marked-alt"></i> <span id="countryCount">10</span> Countries</span>
+      </div>
+      <div class="country-grid" id="countryGrid"></div>
+
+      <div id="gallerySection" style="display:none;">
+        <div class="gallery-header">
+          <div class="gallery-title">
+            <i class="fas fa-images"></i>
+            <span id="galleryTitle">Gallery</span>
+          </div>
+          <div class="gallery-rating" id="galleryRating"></div>
+        </div>
+        <div class="gallery" id="galleryGrid"></div>
+      </div>
+    </div>
+
+    <div class="stats" id="userStats"></div>
+
+    <div class="grid-2">
+      <div>
+        <div class="card">
+          <div class="card-head">
+            <h2><i class="fas fa-wallet"></i> Budget Limits · <span id="activeCountryLbl">Japan</span></h2>
+            <span class="pill" id="currencyBadge"><i class="fas fa-coins"></i> INR + Local</span>
+          </div>
+          <div class="cat-list" id="catList"></div>
+          <div class="note">
+            <i class="fas fa-calculator"></i>
+            Progress turns amber at 80%, red when exceeded. Rollover auto-applied.
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <h2><i class="fas fa-calendar-alt"></i> Yearly Overview · 2025</h2>
+            <span class="pill"><i class="fas fa-rotate-left"></i> Rollover</span>
+          </div>
+          <div class="yearly" id="yearlyGrid"></div>
+        </div>
+      </div>
+
+      <div>
+        <div class="card">
+          <div class="card-head">
+            <h2><i class="fas fa-plus-circle"></i> Add Expense</h2>
+            <span class="pill"><i class="fas fa-user"></i> <span id="currentUserName">Aarav</span></span>
+          </div>
+          <div class="form">
+            <div class="field">
+              <label>Description</label>
+              <div class="wrap">
+                <i class="fas fa-pen"></i>
+                <input type="text" id="expDesc" placeholder="e.g. Sushi dinner" value="Sushi dinner">
+              </div>
+            </div>
+            <div class="row-2">
+              <div class="field">
+                <label>Amount (₹ INR)</label>
+                <div class="wrap">
+                  <i class="fas fa-rupee-sign"></i>
+                  <input type="number" id="expAmount" placeholder="0" min="1" step="1" value="1500">
+                </div>
+              </div>
+              <div class="field">
+                <label>Category</label>
+                <select id="expCategory"></select>
+              </div>
+            </div>
+            <div class="field">
+              <label>Local Currency Preview</label>
+              <div id="expPreview" style="background:var(--accent-lighter); padding:0.75rem 1rem; border-radius:14px; font-size:0.85rem; font-weight:600; color:var(--text-2); border:1px solid var(--card-border);">
+                ₹1,500 = ¥2,685
+              </div>
+            </div>
+            <button class="btn btn-primary ripple-btn" onclick="addExpense()">
+              <i class="fas fa-plus"></i> Add Expense
+            </button>
+          </div>
+        </div>
+
+        <div class="card" style="background:var(--accent-lighter); border:1px dashed var(--card-border);">
+          <div class="card-head">
+            <h2><i class="fas fa-exchange-alt"></i> Currency Info</h2>
+          </div>
+          <div id="currencyInfo" style="font-size:0.82rem; line-height:1.9; color:var(--text-2); font-weight:500;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       ADMIN VIEW
+       ============================================================ -->
+  <div class="view" id="adminView">
+    <div class="stats" id="adminStats"></div>
+
+    <div class="admin-tabs">
+      <button class="admin-tab active" data-tab="users" onclick="switchAdminTab('users')">
+        <i class="fas fa-users"></i> All Users
+      </button>
+      <button class="admin-tab" data-tab="countries" onclick="switchAdminTab('countries')">
+        <i class="fas fa-globe"></i> Country Budgets
+      </button>
+      <button class="admin-tab" data-tab="expenses" onclick="switchAdminTab('expenses')">
+        <i class="fas fa-receipt"></i> All Expenses
+      </button>
+    </div>
+
+    <div class="tab-content active" id="tabUsers">
+      <div class="card">
+        <div class="card-head">
+          <h2><i class="fas fa-users"></i> User Plans & Spending</h2>
+          <span class="pill"><i class="fas fa-database"></i> Live</span>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>User</th>
+                <th>Phone</th>
+                <th>Country</th>
+                <th>Days</th>
+                <th>Total Budget</th>
+                <th>Total Spent</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="adminUsersBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-content" id="tabCountries">
+      <div class="grid-2">
+        <div>
+          <div class="card">
+            <div class="card-head">
+              <h2><i class="fas fa-globe"></i> Country Budgets (Editable)</h2>
+              <span class="pill"><i class="fas fa-map"></i> <span id="adminCountryCount">10</span></span>
+            </div>
+            <div class="admin-country-grid" id="adminCountryGrid"></div>
+          </div>
+        </div>
+        <div>
+          <div class="card">
+            <div class="card-head">
+              <h2><i class="fas fa-plus-circle"></i> Add New Country</h2>
+            </div>
+            <div class="form">
+              <div class="field">
+                <label>Country Name</label>
+                <div class="wrap"><i class="fas fa-flag"></i>
+                  <input type="text" id="newName" placeholder="e.g. Sri Lanka">
+                </div>
+              </div>
+              <div class="row-2">
+                <div class="field">
+                  <label>Flag Emoji</label>
+                  <div class="wrap"><i class="fas fa-flag"></i>
+                    <input type="text" id="newFlag" placeholder="🇱🇰" maxlength="4">
+                  </div>
+                </div>
+                <div class="field">
+                  <label>Trip Days</label>
+                  <div class="wrap"><i class="fas fa-calendar"></i>
+                    <input type="number" id="newDays" placeholder="7" min="1" value="7">
+                  </div>
+                </div>
+              </div>
+              <div class="row-2">
+                <div class="field">
+                  <label>Base Budget (₹)</label>
+                  <div class="wrap"><i class="fas fa-rupee-sign"></i>
+                    <input type="number" id="newBudget" placeholder="80000" min="0" value="80000">
+                  </div>
+                </div>
+                <div class="field">
+                  <label>Currency</label>
+                  <select id="newCurrency">
+                    <option value="INR">INR ₹</option>
+                    <option value="JPY">JPY ¥</option>
+                    <option value="EUR">EUR €</option>
+                    <option value="THB">THB ฿</option>
+                    <option value="USD">USD $</option>
+                    <option value="AUD">AUD A$</option>
+                    <option value="BRL">BRL R$</option>
+                    <option value="GBP">GBP £</option>
+                    <option value="CAD">CAD C$</option>
+                  </select>
+                </div>
+              </div>
+              <div class="row-2">
+                <div class="field">
+                  <label>Rate (1₹ = ?)</label>
+                  <div class="wrap"><i class="fas fa-exchange-alt"></i>
+                    <input type="number" id="newRate" step="0.0001" value="1.79">
+                  </div>
+                </div>
+                <div class="field">
+                  <label>Rating (0-5)</label>
+                  <div class="wrap"><i class="fas fa-star"></i>
+                    <input type="number" id="newRating" step="0.1" min="0" max="5" value="4.7">
+                  </div>
+                </div>
+              </div>
+              <div class="field">
+                <label>Image URL (optional)</label>
+                <div class="wrap"><i class="fas fa-image"></i>
+                  <input type="text" id="newImage" placeholder="https://...">
+                </div>
+              </div>
+              <button class="btn btn-primary ripple-btn" onclick="addCountry()">
+                <i class="fas fa-plus"></i> Add Country
+              </button>
+              <button class="btn btn-secondary ripple-btn" onclick="resetCountries()">
+                <i class="fas fa-rotate-left"></i> Reset to Default
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-content" id="tabExpenses">
+      <div class="card">
+        <div class="card-head">
+          <h2><i class="fas fa-receipt"></i> All Expenses</h2>
+          <span class="pill"><i class="fas fa-database"></i> <span id="adminExpCount">0</span></span>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Description</th>
+                <th>User</th>
+                <th>Country</th>
+                <th>Category</th>
+                <th>INR</th>
+                <th>Local</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody id="adminExpBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <i class="fas fa-globe"></i> BudgetFlow Pro · Dual-currency travel budget planner
+  </footer>
+</div>
+
+<!-- EDIT MODAL -->
+<div class="modal-bg" id="editModal">
+  <div class="modal">
+    <div class="modal-head">
+      <h2><i class="fas fa-edit"></i> Edit Country Budget</h2>
+      <button class="modal-close" onclick="closeEdit()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="form">
+      <input type="hidden" id="editId">
+      <div class="field">
+        <label>Country Name</label>
+        <div class="wrap"><i class="fas fa-flag"></i>
+          <input type="text" id="editName">
+        </div>
+      </div>
+      <div class="row-2">
+        <div class="field">
+          <label>Flag</label>
+          <div class="wrap"><i class="fas fa-flag"></i>
+            <input type="text" id="editFlag" maxlength="4">
+          </div>
+        </div>
+        <div class="field">
+          <label>Trip Days</label>
+          <div class="wrap"><i class="fas fa-calendar"></i>
+            <input type="number" id="editDays" min="1">
+          </div>
+        </div>
+      </div>
+      <div class="row-2">
+        <div class="field">
+          <label>Base Budget (₹)</label>
+          <div class="wrap"><i class="fas fa-rupee-sign"></i>
+            <input type="number" id="editBudget" min="0">
+          </div>
+        </div>
+        <div class="field">
+          <label>Currency</label>
+          <select id="editCurrency">
+            <option value="INR">INR ₹</option>
+            <option value="JPY">JPY ¥</option>
+            <option value="EUR">EUR €</option>
+            <option value="THB">THB ฿</option>
+            <option value="USD">USD $</option>
+            <option value="AUD">AUD A$</option>
+            <option value="BRL">BRL R$</option>
+            <option value="GBP">GBP £</option>
+            <option value="CAD">CAD C$</option>
+          </select>
+        </div>
+      </div>
+      <div class="row-2">
+        <div class="field">
+          <label>Rate (1₹ = ?)</label>
+          <div class="wrap"><i class="fas fa-exchange-alt"></i>
+            <input type="number" id="editRate" step="0.0001">
+          </div>
+        </div>
+        <div class="field">
+          <label>Rating (0-5)</label>
+          <div class="wrap"><i class="fas fa-star"></i>
+            <input type="number" id="editRating" step="0.1" min="0" max="5">
+          </div>
+        </div>
+      </div>
+      <div class="field">
+        <label>Reviews Count</label>
+        <div class="wrap"><i class="fas fa-comment"></i>
+          <input type="number" id="editReviews" min="0">
+        </div>
+      </div>
+      <div class="field">
+        <label>Primary Image URL</label>
+        <div class="wrap"><i class="fas fa-image"></i>
+          <input type="text" id="editImage">
+        </div>
+      </div>
+      <div class="row-2">
+        <button class="btn btn-secondary ripple-btn" onclick="closeEdit()" style="flex:1;">
+          Cancel
+        </button>
+        <button class="btn btn-primary ripple-btn" onclick="saveEdit()" style="flex:2;">
+          <i class="fas fa-save"></i> Save Changes
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"><i class="fas fa-check-circle"></i> <span id="toastText">Done</span></div>
+
+<script>
+/* ============================================================
+   CURRENCY RATES (1 INR = ?)
+   ============================================================ */
+const RATES = {
+  INR: { code: 'INR', symbol: '₹', rate: 1,      name: 'Indian Rupee' },
+  JPY: { code: 'JPY', symbol: '¥', rate: 1.79,   name: 'Japanese Yen' },
+  EUR: { code: 'EUR', symbol: '€', rate: 0.011,  name: 'Euro' },
+  THB: { code: 'THB', symbol: '฿', rate: 0.42,   name: 'Thai Baht' },
+  USD: { code: 'USD', symbol: '$', rate: 0.012,  name: 'US Dollar' },
+  AUD: { code: 'AUD', symbol: 'A$', rate: 0.018, name: 'Australian Dollar' },
+  BRL: { code: 'BRL', symbol: 'R$', rate: 0.065, name: 'Brazilian Real' },
+  GBP: { code: 'GBP', symbol: '£', rate: 0.0095, name: 'British Pound' },
+  CAD: { code: 'CAD', symbol: 'C$', rate: 0.016, name: 'Canadian Dollar' }
+};
+
+/* ============================================================
+   SEED DATA
+   ============================================================ */
+const SEED_COUNTRIES = [
+  { _id: 'c1', name: 'Japan', flag: '🇯🇵', days: 10, baseBudget: 150000, currency: 'JPY', rating: 4.9, reviews: 2847,
+    images: [
+      'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=600&q=80',
+      'https://images.unsplash.com/photo-1542051841857-5f90071e7989?w=600&q=80',
+      'https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=600&q=80'
+    ]},
+  { _id: 'c2', name: 'France', flag: '🇫🇷', days: 7, baseBudget: 140000, currency: 'EUR', rating: 4.8, reviews: 3521,
+    images: [
+      'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=600&q=80',
+      'https://images.unsplash.com/photo-1431274172761-fca41d930114?w=600&q=80',
+      'https://images.unsplash.com/photo-1499856871958-5b9627545d1a?w=600&q=80'
+    ]},
+  { _id: 'c3', name: 'Italy', flag: '🇮🇹', days: 8, baseBudget: 130000, currency: 'EUR', rating: 4.9, reviews: 4102,
+    images: [
+      'https://images.unsplash.com/photo-1515542622106-78bda8ba0e5b?w=600&q=80',
+      'https://images.unsplash.com/photo-1498503182468-3b51cbb6cb24?w=600&q=80',
+      'https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=600&q=80'
+    ]},
+  { _id: 'c4', name: 'Thailand', flag: '🇹🇭', days: 12, baseBudget: 60000, currency: 'THB', rating: 4.7, reviews: 5236,
+    images: [
+      'https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?w=600&q=80',
+      'https://images.unsplash.com/photo-1528181304800-259b08848526?w=600&q=80',
+      'https://images.unsplash.com/photo-1563492065599-3520f775eeed?w=600&q=80'
+    ]},
+  { _id: 'c5', name: 'USA', flag: '🇺🇸', days: 6, baseBudget: 200000, currency: 'USD', rating: 4.6, reviews: 6890,
+    images: [
+      'https://images.unsplash.com/photo-1485738422979-f5c462d49f74?w=600&q=80',
+      'https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=600&q=80',
+      'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=600&q=80'
+    ]},
+  { _id: 'c6', name: 'Australia', flag: '🇦🇺', days: 9, baseBudget: 160000, currency: 'AUD', rating: 4.8, reviews: 2145,
+    images: [
+      'https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?w=600&q=80',
+      'https://images.unsplash.com/photo-1523482580672-f109ba8cb9be?w=600&q=80',
+      'https://images.unsplash.com/photo-1524293581917-878a6d017c71?w=600&q=80'
+    ]},
+  { _id: 'c7', name: 'Brazil', flag: '🇧🇷', days: 8, baseBudget: 80000, currency: 'BRL', rating: 4.5, reviews: 1782,
+    images: [
+      'https://images.unsplash.com/photo-1483729558449-99ef09a8c325?w=600&q=80',
+      'https://images.unsplash.com/photo-1516306580123-e6e52b1b7b5f?w=600&q=80',
+      'https://images.unsplash.com/photo-1554168870-1bfc9d84d3a9?w=600&q=80'
+    ]},
+  { _id: 'c8', name: 'India', flag: '🇮🇳', days: 14, baseBudget: 40000, currency: 'INR', rating: 4.9, reviews: 8721,
+    images: [
+      'https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=600&q=80',
+      'https://images.unsplash.com/photo-1564507592333-c60657eea523?w=600&q=80',
+      'https://images.unsplash.com/photo-1548013146-72479768bada?w=600&q=80'
+    ]},
+  { _id: 'c9', name: 'UK', flag: '🇬🇧', days: 7, baseBudget: 170000, currency: 'GBP', rating: 4.7, reviews: 3054,
+    images: [
+      'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=600&q=80',
+      'https://images.unsplash.com/photo-1486299267070-83823f5448dd?w=600&q=80',
+      'https://images.unsplash.com/photo-1520986606214-8b456906c813?w=600&q=80'
+    ]},
+  { _id: 'c10', name: 'Canada', flag: '🇨🇦', days: 9, baseBudget: 150000, currency: 'CAD', rating: 4.8, reviews: 1932,
+    images: [
+      'https://images.unsplash.com/photo-1517935706615-2717063c2225?w=600&q=80',
+      'https://images.unsplash.com/photo-1503614472-8c93d56e92ce?w=600&q=80',
+      'https://images.unsplash.com/photo-1561130211-3b8a2c9a1a6a?w=600&q=80'
+    ]}
+];
+
+const SEED_USERS = [
+  { _id: 'user_001', name: 'Aarav Sharma',   phone: '9876543210', activeCountry: 'Japan' },
+  { _id: 'user_002', name: 'Priya Patel',    phone: '9812345678', activeCountry: 'Italy' },
+  { _id: 'user_003', name: 'Rohan Verma',    phone: '9765432109', activeCountry: 'Thailand' },
+  { _id: 'user_004', name: 'Ananya Iyer',    phone: '9654321098', activeCountry: 'France' },
+  { _id: 'user_005', name: 'Vikram Singh',   phone: '9543210987', activeCountry: 'USA' },
+  { _id: 'user_006', name: 'Meera Krishnan', phone: '9432109876', activeCountry: 'Australia' }
+];
+
+function seedExpenses() {
+  return [
+    { id: 'e1',  userId: 'user_001', country: 'Japan', category: 'Food',          amount: 12000, description: 'Ramen tour',   date: '2025-02-08T11:30:00Z' },
+    { id: 'e2',  userId: 'user_001', country: 'Japan', category: 'Travel',        amount: 18000, description: 'JR Pass',       date: '2025-02-12T14:00:00Z' },
+    { id: 'e3',  userId: 'user_001', country: 'Japan', category: 'Bills',         amount: 5000,  description: 'Hotel wifi',    date: '2025-02-05T09:00:00Z' },
+    { id: 'e4',  userId: 'user_001', country: 'Japan', category: 'Entertainment', amount: 8000,  description: 'TeamLab',       date: '2025-02-14T20:00:00Z' },
+    { id: 'e5',  userId: 'user_001', country: 'Japan', category: 'Housing',       amount: 45000, description: 'Airbnb Tokyo',  date: '2025-02-01T00:00:00Z' },
+    { id: 'e6',  userId: 'user_001', country: 'Japan', category: 'Other',         amount: 3000,  description: 'SIM card',      date: '2025-02-18T10:00:00Z' },
+    { id: 'e7',  userId: 'user_001', country: 'Japan', category: 'Food',          amount: 25000, description: 'Groceries Jan', date: '2025-01-10T10:00:00Z' },
+    { id: 'e8',  userId: 'user_001', country: 'Japan', category: 'Travel',        amount: 12000, description: 'Train Jan',     date: '2025-01-05T08:00:00Z' },
+    { id: 'e9',  userId: 'user_001', country: 'Japan', category: 'Housing',       amount: 40000, description: 'Rent Jan',      date: '2025-01-01T00:00:00Z' },
+    { id: 'e10', userId: 'user_002', country: 'Italy', category: 'Food',          amount: 14000, description: 'Pasta tour',    date: '2025-02-09T12:00:00Z' },
+    { id: 'e11', userId: 'user_002', country: 'Italy', category: 'Housing',       amount: 35000, description: 'Rome hotel',    date: '2025-02-03T00:00:00Z' },
+    { id: 'e12', userId: 'user_002', country: 'Italy', category: 'Travel',        amount: 9000,  description: 'Florence train',date: '2025-02-11T08:00:00Z' },
+    { id: 'e13', userId: 'user_003', country: 'Thailand', category: 'Food',       amount: 6000,  description: 'Street food',   date: '2025-02-07T18:00:00Z' },
+    { id: 'e14', userId: 'user_003', country: 'Thailand', category: 'Housing',    amount: 12000, description: 'Hostel',        date: '2025-02-01T00:00:00Z' },
+    { id: 'e15', userId: 'user_003', country: 'Thailand', category: 'Entertainment', amount: 4000, description: 'Island tour',  date: '2025-02-13T09:00:00Z' },
+    { id: 'e16', userId: 'user_004', country: 'France', category: 'Food',         amount: 18000, description: 'Bistro',        date: '2025-02-08T19:30:00Z' },
+    { id: 'e17', userId: 'user_004', country: 'France', category: 'Travel',       amount: 12000, description: 'Metro pass',    date: '2025-02-10T10:00:00Z' },
+    { id: 'e18', userId: 'user_004', country: 'France', category: 'Housing',      amount: 38000, description: 'Paris hotel',   date: '2025-02-02T00:00:00Z' },
+    { id: 'e19', userId: 'user_005', country: 'USA', category: 'Food',            amount: 22000, description: 'NYC dining',    date: '2025-02-06T19:00:00Z' },
+    { id: 'e20', userId: 'user_005', country: 'USA', category: 'Housing',         amount: 60000, description: 'Manhattan',     date: '2025-02-01T00:00:00Z' },
+    { id: 'e21', userId: 'user_006', country: 'Australia', category: 'Food',      amount: 15000, description: 'Sydney seafood',date: '2025-02-09T20:00:00Z' },
+    { id: 'e22', userId: 'user_006', country: 'Australia', category: 'Travel',    amount: 10000, description: 'Opal card',     date: '2025-02-05T08:00:00Z' }
+  ];
+}
+
+/* ============================================================
+   STATE
+   ============================================================ */
+const STORAGE_KEY = 'bfp_v5';
+const THEME_KEY = 'bfp_theme_v5';
+const CURRENT_MONTH = '2025-02';
+
+let db = { countries: [], users: [], expenses: [] };
+let activeCountry = 'Japan';
+let currentRole = 'user';
+let currentUser = null;
+
+/* ============================================================
+   DB LOAD / SAVE
+   ============================================================ */
+function loadDB() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed && parsed.users && parsed.countries && parsed.expenses
+          && parsed.users.length > 0 && parsed.countries.length > 0
+          && parsed.users.every(u => u.phone)) {
+        db = parsed;
+        return;
+      }
+    }
+  } catch (e) { /* ignore */ }
+  // fresh seed
+  db = {
+    countries: JSON.parse(JSON.stringify(SEED_COUNTRIES)),
+    users: JSON.parse(JSON.stringify(SEED_USERS)),
+    expenses: JSON.parse(JSON.stringify(seedExpenses()))
+  };
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
+}
+
+function saveDB() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(db)); } catch (e) {}
+}
+
+/* ============================================================
+   THEME
+   ============================================================ */
+function initTheme() {
+  const saved = localStorage.getItem(THEME_KEY) || 'midnight';
+  document.body.setAttribute('data-theme', saved);
+  const sel = document.getElementById('themeSel');
+  if (sel) sel.value = saved;
+}
+function changeTheme(t) {
+  document.body.setAttribute('data-theme', t);
+  localStorage.setItem(THEME_KEY, t);
+  toast('🎨 Theme changed');
+}
+
+/* ============================================================
+   TOAST
+   ============================================================ */
+let toastTimer;
+function toast(msg) {
+  const t = document.getElementById('toast');
+  document.getElementById('toastText').textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+/* ============================================================
+   RIPPLE
+   ============================================================ */
+document.addEventListener('click', function(e) {
+  const el = e.target.closest('.ripple-btn, .country-card, .gal-item, .admin-country, .ym, .stat');
+  if (!el) return;
+  const rect = el.getBoundingClientRect();
+  const size = Math.max(rect.width, rect.height);
+  const ripple = document.createElement('span');
+  ripple.className = 'ripple';
+  ripple.style.width = ripple.style.height = size + 'px';
+  ripple.style.left = (e.clientX - rect.left - size/2) + 'px';
+  ripple.style.top  = (e.clientY - rect.top  - size/2) + 'px';
+  if (getComputedStyle(el).position === 'static') el.style.position = 'relative';
+  if (getComputedStyle(el).overflow !== 'hidden') el.style.overflow = 'hidden';
+  el.appendChild(ripple);
+  setTimeout(() => ripple.remove(), 700);
+});
+
+/* ============================================================
+   HELPERS
+   ============================================================ */
+function formatINR(n) {
+  return '₹' + Math.round(n).toLocaleString('en-IN');
+}
+function formatLocal(amountINR, country) {
+  const c = RATES[country.currency] || RATES.INR;
+  const conv = amountINR * c.rate;
+  let out;
+  if (conv >= 1000) out = Math.round(conv).toLocaleString('en-US');
+  else if (conv >= 100) out = Math.round(conv).toString();
+  else out = conv.toFixed(2);
+  return c.symbol + ' ' + out;
+}
+function getCountry() {
+  return db.countries.find(c => c.name === activeCountry) || db.countries[0];
+}
+function getActiveUserId() {
+  return currentUser && currentUser.type === 'user' ? currentUser._id : 'user_001';
+}
+function categoryLimits(country) {
+  const props = { Food: 0.20, Travel: 0.18, Bills: 0.12, Entertainment: 0.10, Housing: 0.32, Other: 0.08 };
+  const out = {};
+  Object.keys(props).forEach(k => { out[k] = Math.round(country.baseBudget * props[k]); });
+  return out;
+}
+function stars(rating) {
+  const full = Math.round(rating);
+  return '★'.repeat(full) + '☆'.repeat(5 - full);
+}
+
+/* ============================================================
+   AGGREGATION
+   ============================================================ */
+function spentByCategory(userId, countryName, monthKey) {
+  const out = {};
+  db.expenses.forEach(e => {
+    if (e.userId !== userId) return;
+    if (countryName && e.country !== countryName) return;
+    if (monthKey && e.date.slice(0,7) !== monthKey) return;
+    out[e.category] = (out[e.category] || 0) + e.amount;
+  });
+  return out;
+}
+function getRollover(userId, countryName, category, baseLimit) {
+  const months = [...new Set(
+    db.expenses.filter(e => e.userId === userId && e.country === countryName)
+      .map(e => e.date.slice(0,7))
+  )].sort();
+  const previous = months.filter(m => m < CURRENT_MONTH);
+  let total = 0;
+  previous.forEach(m => {
+    const spent = spentByCategory(userId, countryName, m)[category] || 0;
+    total += Math.max(0, baseLimit - spent);
+  });
+  return total;
+}
+function budgetWithRollover(userId, countryName, category) {
+  const c = db.countries.find(x => x.name === countryName);
+  if (!c) return { base: 0, rollover: 0, effectiveLimit: 0 };
+  const base = categoryLimits(c)[category] || 0;
+  const rollover = getRollover(userId, countryName, category, base);
+  return { base, rollover, effectiveLimit: base + rollover };
+}
+
+/* ============================================================
+   LOGIN / LOGOUT
+   ============================================================ */
+function switchLoginTab(tab) {
+  document.querySelectorAll('.login-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.login-form').forEach(f => f.classList.remove('active'));
+  document.getElementById('loginTitle').textContent = tab === 'user' ? 'Welcome Back' : 'Admin Access';
+  document.getElementById('loginSub').textContent = tab === 'user'
+    ? 'Sign in to continue planning your journey'
+    : 'Manage users, countries and budgets';
+  if (tab === 'user') {
+    document.querySelector('[data-tab="user"]').classList.add('active');
+    document.getElementById('userForm').classList.add('active');
+  } else {
+    document.querySelector('[data-tab="admin"]').classList.add('active');
+    document.getElementById('adminForm').classList.add('active');
+  }
+}
+
+function loginUser() {
+  const name = document.getElementById('loginName').value.trim();
+  const phone = document.getElementById('loginPhone').value.trim();
+  if (!name) { toast('⚠️ Enter your name'); return; }
+  if (!/^\d{10}$/.test(phone)) { toast('⚠️ Enter a valid 10-digit number'); return; }
+
+  let user = db.users.find(u => u.phone === phone);
+  if (!user) {
+    const userId = 'user_' + Date.now();
+    user = { _id: userId, name, phone, activeCountry: 'Japan' };
+    db.users.push(user);
+    // Copy sample expenses
+    const template = db.expenses.filter(e => e.userId === 'user_001');
+    const now = Date.now();
+    template.forEach((e, i) => {
+      db.expenses.push({ ...e, id: 'exp_' + now + '_' + i, userId });
+    });
+    saveDB();
+  } else {
+    user.name = name;
+    saveDB();
+  }
+
+  currentUser = { type: 'user', ...user };
+  activeCountry = user.activeCountry || 'Japan';
+
+  document.getElementById('chipName').textContent = user.name;
+  document.getElementById('chipSub').textContent = '📱 ' + user.phone;
+  document.getElementById('currentUserName').textContent = user.name.split(' ')[0];
+  document.getElementById('btnAdmin').style.display = 'none';
+
+  // Hide landing
+  const landing = document.getElementById('landing');
+  landing.classList.add('hide');
+  setTimeout(() => {
+    landing.style.display = 'none';
+    const app = document.getElementById('app');
+    app.style.display = 'block';
+    app.classList.add('show');
+    switchRole('user');
+    toast('👋 Welcome, ' + user.name.split(' ')[0] + '!');
+  }, 400);
+}
+
+function loginAdmin() {
+  const u = document.getElementById('adminUser').value.trim();
+  const p = document.getElementById('adminPass').value.trim();
+  if (u !== 'jeevan' || p !== '123') { toast('❌ Invalid admin credentials'); return; }
+
+  currentUser = { type: 'admin', name: 'Jeevan' };
+  document.getElementById('chipName').textContent = 'Jeevan';
+  document.getElementById('chipSub').textContent = '🛡️ Administrator';
+  document.getElementById('btnAdmin').style.display = 'flex';
+
+  const landing = document.getElementById('landing');
+  landing.classList.add('hide');
+  setTimeout(() => {
+    landing.style.display = 'none';
+    const app = document.getElementById('app');
+    app.style.display = 'block';
+    app.classList.add('show');
+    switchRole('admin');
+    toast('🛡️ Admin access granted');
+  }, 400);
+}
+
+function logout() {
+  if (!confirm('Are you sure you want to logout?')) return;
+  currentUser = null;
+  const app = document.getElementById('app');
+  app.classList.remove('show');
+  setTimeout(() => {
+    app.style.display = 'none';
+    const landing = document.getElementById('landing');
+    landing.style.display = 'grid';
+    setTimeout(() => landing.classList.remove('hide'), 40);
+    document.getElementById('adminUser').value = '';
+    document.getElementById('adminPass').value = '';
+    switchLoginTab('user');
+  }, 300);
+}
+
+/* ============================================================
+   ROLE SWITCH
+   ============================================================ */
+function switchRole(role) {
+  if (role === 'admin' && (!currentUser || currentUser.type !== 'admin')) {
+    toast('⚠️ Admin access only'); return;
+  }
+  currentRole = role;
+  document.getElementById('btnUser').classList.toggle('active', role === 'user');
+  document.getElementById('btnAdmin').classList.toggle('active', role === 'admin');
+  document.getElementById('userView').classList.toggle('active', role === 'user');
+  document.getElementById('adminView').classList.toggle('active', role === 'admin');
+
+  if (role === 'user') {
+    if (currentUser && currentUser.type === 'user') {
+      document.getElementById('chipName').textContent = currentUser.name;
+      document.getElementById('chipSub').textContent = '📱 ' + currentUser.phone;
+    }
+    renderUser();
+  } else {
+    document.getElementById('chipName').textContent = 'Jeevan';
+    document.getElementById('chipSub').textContent = '🛡️ Administrator';
+    renderAdmin();
+  }
+}
+
+function switchAdminTab(tab) {
+  document.querySelectorAll('.admin-tab').forEach(t => {
+    t.classList.toggle('active', t.dataset.tab === tab);
+  });
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  document.getElementById('tab' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.add('active');
+}
+
+/* ============================================================
+   USER DASHBOARD RENDER
+   ============================================================ */
+function renderUser() {
+  renderCountryCards();
+  renderGallery();
+  renderUserStats();
+  renderCategoryList();
+  renderYearly();
+  renderCategorySelect();
+  renderCurrencyInfo();
+  updatePreview();
+}
+
+function renderCountryCards() {
+  const grid = document.getElementById('countryGrid');
+  const user = db.users.find(u => u._id === getActiveUserId());
+  const active = user ? user.activeCountry : null;
+  document.getElementById('countryCount').textContent = db.countries.length;
+
+  grid.innerHTML = db.countries.map((c, i) => {
+    const sel = c.name === activeCountry ? 'selected' : '';
+    const tick = c.name === active ? '<i class="fas fa-check-circle check"></i>' : '';
+    const img = c.images && c.images[0] ? c.images[0] : '';
+    return `
+      <div class="country-card ${sel}" style="animation-delay:${i * 0.04}s" onclick="selectCountry('${escapeAttr(c.name)}')">
+        <div class="thumb" style="background-image:url('${img}');">
+          <div class="flag">${c.flag}</div>
+          <div class="rating"><i class="fas fa-star"></i> ${(c.rating || 0).toFixed(1)}</div>
+        </div>
+        <div class="ci">
+          <div class="n">${c.name}${tick}</div>
+          <div class="d">${c.days} days · ${formatINR(c.baseBudget)}</div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function renderGallery() {
+  const c = getCountry();
+  const section = document.getElementById('gallerySection');
+  if (!c || !c.images || c.images.length === 0) { section.style.display = 'none'; return; }
+  section.style.display = 'block';
+  document.getElementById('galleryTitle').textContent = `${c.flag} ${c.name} — Travel Gallery`;
+  document.getElementById('galleryRating').innerHTML = `
+    <span class="stars">${stars(c.rating || 0)}</span>
+    <span>${(c.rating || 0).toFixed(1)}</span>
+    <span class="cnt">(${(c.reviews || 0).toLocaleString()} reviews)</span>
+  `;
+  document.getElementById('galleryGrid').innerHTML = c.images.map(img => `
+    <div class="gal-item" style="background-image:url('${img}');"></div>
+  `).join('');
+}
+
+function renderUserStats() {
+  const userId = getActiveUserId();
+  const c = getCountry();
+  const spent = spentByCategory(userId, activeCountry, CURRENT_MONTH);
+  const totalSpent = Object.values(spent).reduce((a,b) => a+b, 0);
+
+  let totalLimit = 0;
+  Object.keys(categoryLimits(c)).forEach(cat => {
+    totalLimit += budgetWithRollover(userId, activeCountry, cat).effectiveLimit;
+  });
+
+  const remaining = totalLimit - totalSpent;
+  const pct = totalLimit > 0 ? (totalSpent / totalLimit) * 100 : 0;
+  const sym = (RATES[c.currency] || RATES.INR).symbol;
+
+  document.getElementById('userStats').innerHTML = `
+    <div class="stat">
+      <div class="l"><i class="fas fa-globe"></i> Active Country</div>
+      <div class="v">${c.flag} ${c.name}</div>
+      <div class="s">${c.days} days trip</div>
+    </div>
+    <div class="stat">
+      <div class="l"><i class="fas fa-arrow-down"></i> Spent (Feb)</div>
+      <div class="v">${formatINR(totalSpent)}</div>
+      <div class="s">${formatLocal(totalSpent, c)} ${c.currency}</div>
+    </div>
+    <div class="stat">
+      <div class="l"><i class="fas fa-wallet"></i> Effective Limit</div>
+      <div class="v">${formatINR(totalLimit)}</div>
+      <div class="s">${formatLocal(totalLimit, c)} ${c.currency}</div>
+    </div>
+    <div class="stat ${remaining < 0 ? 'danger' : ''}">
+      <div class="l"><i class="fas fa-balance-scale"></i> Remaining</div>
+      <div class="v">${formatINR(remaining)}</div>
+      <div class="s">${pct.toFixed(1)}% used</div>
+    </div>
+  `;
+}
+
+function renderCategoryList() {
+  const userId = getActiveUserId();
+  const c = getCountry();
+  document.getElementById('activeCountryLbl').textContent = `${c.flag} ${c.name}`;
+  document.getElementById('currencyBadge').innerHTML = `<i class="fas fa-coins"></i> INR + ${c.currency}`;
+
+  const spent = spentByCategory(userId, activeCountry, CURRENT_MONTH);
+  const limits = categoryLimits(c);
+  const icons = { Food: 'fa-utensils', Travel: 'fa-plane', Bills: 'fa-bolt', Entertainment: 'fa-film', Housing: 'fa-home', Other: 'fa-box' };
+  const colors = { Food: '#f97316', Travel: '#0ea5e9', Bills: '#eab308', Entertainment: '#a855f7', Housing: '#10b981', Other: '#6b7280' };
+
+  document.getElementById('catList').innerHTML = Object.keys(limits).map(cat => {
+    const { base, rollover, effectiveLimit } = budgetWithRollover(userId, activeCountry, cat);
+    const s = spent[cat] || 0;
+    const pct = effectiveLimit > 0 ? (s / effectiveLimit) * 100 : 0;
+    const cls = pct >= 100 ? 'danger' : pct >= 80 ? 'warn' : '';
+    const w = Math.min(pct, 100);
+
+    return `
+      <div class="cat-row">
+        <div class="cat-top">
+          <div class="cat-name">
+            <i class="fas ${icons[cat]}" style="color:${colors[cat]}"></i>
+            <span>${cat}</span>
+            ${rollover > 0 ? `<span class="rollover"><i class="fas fa-rotate-left"></i> +${formatINR(rollover)}</span>` : ''}
+          </div>
+          <div class="cat-limit">Limit: ${formatINR(effectiveLimit)}</div>
+        </div>
+        <div class="bar-wrap">
+          <div class="bar-bg"><div class="bar-fill ${cls}" style="width:${w}%"></div></div>
+          <div class="cat-amt">
+            <div class="inr">${formatINR(s)} / ${formatINR(effectiveLimit)}</div>
+            <div class="loc">${formatLocal(s, c)} / ${formatLocal(effectiveLimit, c)} ${c.currency}</div>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function renderYearly() {
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const userId = getActiveUserId();
+  const c = getCountry();
+  const totalBase = Object.values(categoryLimits(c)).reduce((a,b) => a+b, 0);
+
+  document.getElementById('yearlyGrid').innerHTML = months.map((m, i) => {
+    const key = `2025-${String(i+1).padStart(2,'0')}`;
+    const spent = spentByCategory(userId, activeCountry, key);
+    const total = Object.values(spent).reduce((a,b) => a+b, 0);
+    return `
+      <div class="ym">
+        <div class="m">${m}</div>
+        <div class="t">${formatINR(total)}</div>
+        <div class="l">${formatLocal(total, c)}</div>
+        <div class="l">/ ${formatINR(totalBase)}</div>
+      </div>`;
+  }).join('');
+}
+
+function renderCategorySelect() {
+  const sel = document.getElementById('expCategory');
+  const c = getCountry();
+  sel.innerHTML = Object.keys(categoryLimits(c)).map(k => `<option value="${k}">${k}</option>`).join('');
+}
+
+function renderCurrencyInfo() {
+  const c = getCountry();
+  const r = RATES[c.currency] || RATES.INR;
+  document.getElementById('currencyInfo').innerHTML = `
+    <div><strong>Destination:</strong> ${c.flag} ${c.name}</div>
+    <div><strong>Local Currency:</strong> ${r.name} (${r.code})</div>
+    <div><strong>Exchange:</strong> 1 ₹ = ${r.rate} ${r.code}</div>
+    <div><strong>Reverse:</strong> 1 ${r.code} ≈ ₹${(1/r.rate).toFixed(2)}</div>
+    <div><strong>Base Budget:</strong> ${formatINR(c.baseBudget)} = ${r.symbol} ${Math.round(c.baseBudget * r.rate).toLocaleString()}</div>
+  `;
+}
+
+function updatePreview() {
+  const amount = parseFloat(document.getElementById('expAmount').value) || 0;
+  const c = getCountry();
+  const r = RATES[c.currency] || RATES.INR;
+  const local = amount * r.rate;
+  const rounded = local >= 1000 ? Math.round(local).toLocaleString() : local.toFixed(2);
+  document.getElementById('expPreview').innerHTML = `
+    <i class="fas fa-exchange-alt" style="color:var(--accent)"></i>
+    ${formatINR(amount)} = ${r.symbol} ${rounded} ${c.currency}
+  `;
+}
+
+/* ============================================================
+   ADMIN RENDER
+   ============================================================ */
+function renderAdmin() {
+  renderAdminStats();
+  renderAdminUsers();
+  renderAdminCountries();
+  renderAdminExpenses();
+}
+
+function renderAdminStats() {
+  const totalSpent = db.expenses.reduce((s,e) => s + e.amount, 0);
+  document.getElementById('adminStats').innerHTML = `
+    <div class="stat">
+      <div class="l"><i class="fas fa-users"></i> Total Users</div>
+      <div class="v">${db.users.length}</div>
+      <div class="s">Indian travellers</div>
+    </div>
+    <div class="stat">
+      <div class="l"><i class="fas fa-globe"></i> Countries</div>
+      <div class="v">${db.countries.length}</div>
+      <div class="s">Destinations</div>
+    </div>
+    <div class="stat">
+      <div class="l"><i class="fas fa-receipt"></i> Expenses</div>
+      <div class="v">${db.expenses.length}</div>
+      <div class="s">Transactions</div>
+    </div>
+    <div class="stat">
+      <div class="l"><i class="fas fa-rupee-sign"></i> Total Spent</div>
+      <div class="v">${formatINR(totalSpent)}</div>
+      <div class="s">Across all users</div>
+    </div>
+  `;
+}
+
+function renderAdminUsers() {
+  document.getElementById('adminUsersBody').innerHTML = db.users.map(u => {
+    const c = db.countries.find(x => x.name === u.activeCountry);
+    const days = c ? c.days : '—';
+    let limit = 0;
+    if (c) Object.keys(categoryLimits(c)).forEach(cat => {
+      limit += budgetWithRollover(u._id, c.name, cat).effectiveLimit;
+    });
+    const spent = db.expenses.filter(e => e.userId === u._id && (!c || e.country === c.name))
+      .reduce((s,e) => s + e.amount, 0);
+    const pct = limit > 0 ? (spent/limit)*100 : 0;
+    const cls = pct >= 100 ? 'over' : pct >= 80 ? 'warn' : 'ok';
+    const txt = pct >= 100 ? 'Over Budget' : pct >= 80 ? 'Near Limit' : 'On Track';
+    const initials = u.name.split(' ').map(n => n[0]).join('').slice(0,2);
+    return `
+      <tr>
+        <td><span class="avatar">${initials}</span>${u.name}</td>
+        <td>📱 ${u.phone}</td>
+        <td>${c ? c.flag + ' ' + c.name : '—'}</td>
+        <td>${days} days</td>
+        <td style="font-weight:700">${formatINR(limit)}</td>
+        <td style="font-weight:700;color:${pct>=100?'#ef4444':pct>=80?'#f59e0b':'inherit'}">${formatINR(spent)}</td>
+        <td><span class="status ${cls}">${txt}</span></td>
+      </tr>`;
+  }).join('');
+}
+
+function renderAdminCountries() {
+  document.getElementById('adminCountryCount').textContent = db.countries.length;
+  const grid = document.getElementById('adminCountryGrid');
+  if (db.countries.length === 0) {
+    grid.innerHTML = '<div style="padding:2rem;color:var(--text-muted)">No countries. Add one →</div>';
+    return;
+  }
+  grid.innerHTML = db.countries.map(c => {
+    const total = Object.values(categoryLimits(c)).reduce((a,b) => a+b, 0);
+    const r = RATES[c.currency] || RATES.INR;
+    const img = c.images && c.images[0] ? c.images[0] : '';
+    return `
+      <div class="admin-country">
+        <div class="thumb" style="background-image:url('${img}');">
+          <div class="flag">${c.flag}</div>
+          <div class="rating"><i class="fas fa-star"></i> ${(c.rating||0).toFixed(1)}</div>
+        </div>
+        <div class="admin-country-body">
+          <div class="n">${c.name}</div>
+          <div class="detail"><i class="fas fa-calendar"></i> ${c.days} days trip</div>
+          <div class="detail"><i class="fas fa-rupee-sign"></i> Base: ${formatINR(c.baseBudget)}</div>
+          <div class="detail"><i class="fas fa-exchange-alt"></i> 1₹ = ${r.rate} ${r.code}</div>
+          <div class="detail"><i class="fas fa-chart-pie"></i> Category total: ${formatINR(total)}</div>
+          <div class="actions">
+            <button class="btn-edit ripple-btn" onclick="openEdit('${c._id}')"><i class="fas fa-edit"></i> Edit</button>
+            <button class="btn-del ripple-btn" onclick="deleteCountry('${c._id}')"><i class="fas fa-trash"></i></button>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function renderAdminExpenses() {
+  document.getElementById('adminExpCount').textContent = db.expenses.length;
+  const sorted = [...db.expenses].sort((a,b) => new Date(b.date) - new Date(a.date));
+  document.getElementById('adminExpBody').innerHTML = sorted.map(e => {
+    const u = db.users.find(x => x._id === e.userId);
+    const c = db.countries.find(x => x.name === e.country);
+    const flag = c ? c.flag : '🌐';
+    const local = c ? formatLocal(e.amount, c) : '—';
+    return `
+      <tr>
+        <td>${escapeHtml(e.description)}</td>
+        <td>${u ? u.name : '—'}</td>
+        <td>${flag} ${e.country}</td>
+        <td><span style="background:var(--accent-lighter);color:var(--text-2);padding:0.15rem 0.6rem;border-radius:40px;font-weight:700;font-size:0.66rem">${e.category}</span></td>
+        <td style="font-weight:700">${formatINR(e.amount)}</td>
+        <td style="color:var(--text-muted);font-weight:600">${local} ${c ? c.currency : ''}</td>
+        <td style="color:var(--text-muted)">${new Date(e.date).toLocaleDateString('en-IN')}</td>
+      </tr>`;
+  }).join('');
+}
+
+/* ============================================================
+   ACTIONS
+   ============================================================ */
+function selectCountry(name) {
+  activeCountry = name;
+  if (currentUser && currentUser.type === 'user') {
+    const u = db.users.find(x => x._id === currentUser._id);
+    if (u) { u.activeCountry = name; currentUser.activeCountry = name; saveDB(); }
+  }
+  renderUser();
+}
+
+function addExpense() {
+  const desc = document.getElementById('expDesc').value.trim();
+  const amount = parseFloat(document.getElementById('expAmount').value);
+  const cat = document.getElementById('expCategory').value;
+  if (!desc) { toast('⚠️ Enter description'); return; }
+  if (isNaN(amount) || amount <= 0) { toast('⚠️ Enter valid amount'); return; }
+
+  db.expenses.push({
+    id: 'exp_' + Date.now() + Math.random().toString(36).slice(2,7),
+    userId: getActiveUserId(),
+    country: activeCountry,
+    category: cat,
+    amount,
+    description: desc,
+    date: `2025-02-${String(Math.floor(Math.random()*20)+10).padStart(2,'0')}T12:00:00Z`
+  });
+  saveDB();
+  renderUser();
+  document.getElementById('expDesc').value = '';
+  document.getElementById('expDesc').focus();
+  toast(`✅ Added: ${formatINR(amount)}`);
+}
+
+function addCountry() {
+  const name = document.getElementById('newName').value.trim();
+  const flag = document.getElementById('newFlag').value.trim() || '🌐';
+  const days = parseInt(document.getElementById('newDays').value) || 7;
+  const base = parseFloat(document.getElementById('newBudget').value) || 80000;
+  const cur = document.getElementById('newCurrency').value;
+  const rate = parseFloat(document.getElementById('newRate').value) || 1;
+  const rating = parseFloat(document.getElementById('newRating').value) || 4.5;
+  const img = document.getElementById('newImage').value.trim();
+
+  if (!name) { toast('⚠️ Enter a country name'); return; }
+  if (db.countries.find(c => c.name.toLowerCase() === name.toLowerCase())) {
+    toast('⚠️ Country already exists'); return;
+  }
+  if (RATES[cur]) RATES[cur].rate = rate;
+
+  const images = img ? [img, img, img] : [
+    `https://source.unsplash.com/600x400/?${encodeURIComponent(name)},landmark`,
+    `https://source.unsplash.com/600x400/?${encodeURIComponent(name)},city`,
+    `https://source.unsplash.com/600x400/?${encodeURIComponent(name)},travel`
+  ];
+
+  db.countries.push({
+    _id: 'c_' + Date.now(),
+    name, flag, days, baseBudget: base, currency: cur, rating,
+    reviews: Math.floor(Math.random()*3000)+500,
+    images
+  });
+  saveDB();
+  renderAdmin();
+
+  document.getElementById('newName').value = '';
+  document.getElementById('newFlag').value = '';
+  document.getElementById('newDays').value = '7';
+  document.getElementById('newBudget').value = '80000';
+  document.getElementById('newImage').value = '';
+  toast(`✅ ${name} added!`);
+}
+
+function deleteCountry(id) {
+  const c = db.countries.find(x => x._id === id);
+  if (!confirm('Delete ' + (c ? c.name : 'this country') + '?')) return;
+  db.countries = db.countries.filter(x => x._id !== id);
+  saveDB();
+  if (!db.countries.find(x => x.name === activeCountry) && db.countries.length > 0) {
+    activeCountry = db.countries[0].name;
+  }
+  renderAdmin();
+  toast('🗑️ Deleted');
+}
+
+function resetCountries() {
+  if (!confirm('Reset to default 10 countries?')) return;
+  db.countries = JSON.parse(JSON.stringify(SEED_COUNTRIES));
+  saveDB();
+  renderAdmin();
+  toast('🔄 Reset complete');
+}
+
+/* ============================================================
+   EDIT MODAL
+   ============================================================ */
+function openEdit(id) {
+  const c = db.countries.find(x => x._id === id);
+  if (!c) return;
+  document.getElementById('editId').value = c._id;
+  document.getElementById('editName').value = c.name;
+  document.getElementById('editFlag').value = c.flag;
+  document.getElementById('editDays').value = c.days;
+  document.getElementById('editBudget').value = c.baseBudget;
+  document.getElementById('editCurrency').value = c.currency;
+  document.getElementById('editRate').value = (RATES[c.currency] || RATES.INR).rate;
+  document.getElementById('editRating').value = c.rating || 4.5;
+  document.getElementById('editReviews').value = c.reviews || 0;
+  document.getElementById('editImage').value = c.images && c.images[0] ? c.images[0] : '';
+  document.getElementById('editModal').classList.add('show');
+}
+
+function closeEdit() {
+  document.getElementById('editModal').classList.remove('show');
+}
+
+function saveEdit() {
+  const id = document.getElementById('editId').value;
+  const c = db.countries.find(x => x._id === id);
+  if (!c) return;
+
+  const name = document.getElementById('editName').value.trim();
+  if (!name) { toast('⚠️ Name required'); return; }
+
+  const flag = document.getElementById('editFlag').value.trim() || c.flag;
+  const days = parseInt(document.getElementById('editDays').value) || c.days;
+  const budget = parseFloat(document.getElementById('editBudget').value) || c.baseBudget;
+  const cur = document.getElementById('editCurrency').value;
+  const rate = parseFloat(document.getElementById('editRate').value);
+  const rating = parseFloat(document.getElementById('editRating').value) || c.rating;
+  const reviews = parseInt(document.getElementById('editReviews').value) || c.reviews || 0;
+  const img = document.getElementById('editImage').value.trim();
+
+  const oldName = c.name;
+
+  c.name = name;
+  c.flag = flag;
+  c.days = days;
+  c.baseBudget = budget;
+  c.currency = cur;
+  c.rating = rating;
+  c.reviews = reviews;
+  if (img) c.images = [img, c.images[1] || img, c.images[2] || img];
+  if (RATES[cur] && !isNaN(rate)) RATES[cur].rate = rate;
+
+  if (oldName !== name) {
+    db.expenses.forEach(e => { if (e.country === oldName) e.country = name; });
+    db.users.forEach(u => { if (u.activeCountry === oldName) u.activeCountry = name; });
+    if (activeCountry === oldName) activeCountry = name;
+  }
+
+  saveDB();
+  closeEdit();
+  renderAdmin();
+  if (currentRole === 'user') renderUser();
+  toast('✅ Country updated');
+}
+
+/* ============================================================
+   UTILS
+   ============================================================ */
+function escapeHtml(s) {
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+function escapeAttr(s) {
+  return String(s).replace(/'/g, "\\'").replace(/"/g, '&quot;');
+}
+
+/* ============================================================
+   EVENTS
+   ============================================================ */
+document.getElementById('expAmount').addEventListener('input', updatePreview);
+document.getElementById('expDesc').addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') { e.preventDefault(); addExpense(); }
+});
+document.getElementById('editModal').addEventListener('click', (e) => {
+  if (e.target.id === 'editModal') closeEdit();
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeEdit();
+});
+
+/* ============================================================
+   INIT
+   ============================================================ */
+(function init() {
+  initTheme();
+  loadDB();
+  console.log('%c✅ BudgetFlow Pro ready', 'color:#3b82f6;font-weight:800;font-size:14px');
+  console.log('🌍 Countries:', db.countries.length);
+  console.log('👥 Users:', db.users.length);
+  console.log('💸 Expenses:', db.expenses.length);
+})();
+</script>
+</body>
+</html>
